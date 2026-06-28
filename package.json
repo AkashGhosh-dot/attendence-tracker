@@ -9,7 +9,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed",
+    "db:seed": "DATABASE_URL=$DIRECT_URL prisma db seed",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset"
   },

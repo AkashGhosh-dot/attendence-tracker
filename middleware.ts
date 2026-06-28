@@ -38,7 +38,15 @@ export async function middleware(req: NextRequest) {
 
   // Approved user — enforce role-based routing
   const role = token.role as "EMPLOYEE" | "HR"
-  const dashboard = ROLE_DASHBOARDS[role] ?? "/login"
+  const dashboard = ROLE_DASHBOARDS[role]
+
+  // Unknown role (e.g. stale JWT from a removed role) — clear session and force re-login
+  if (!dashboard) {
+    const res = NextResponse.redirect(new URL("/login", req.url))
+    res.cookies.delete("next-auth.session-token")
+    res.cookies.delete("__Secure-next-auth.session-token")
+    return res
+  }
 
   // Redirect away from auth/root pages when already logged in
   if (

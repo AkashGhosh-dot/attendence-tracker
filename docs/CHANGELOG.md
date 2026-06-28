@@ -8,6 +8,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — 2026-06-28 — Sprint 2: Authentication & Account Management
+
+**Backend**
+- `POST /api/v1/auth/register` — employee self-registration with Zod validation, bcrypt (cost 12), email + employeeId uniqueness checks; returns 201
+- `GET /api/v1/owner/hr-accounts` — paginated HR account list with optional `status` and `search` filters (max 100/page)
+- `POST /api/v1/owner/hr-accounts` — Owner creates HR account (role=HR, status=APPROVED immediately)
+- `PATCH /api/v1/owner/hr-accounts/[id]/status` — Owner deactivates (APPROVED→DEACTIVATED) or reactivates (DEACTIVATED→APPROVED) HR accounts; enforces state machine
+- `lib/rate-limit.ts` — in-memory IP-based rate limiter (10 req/min); applied to `/api/v1/auth/register`
+- Extended NextAuth JWT/session to carry `statusReason` so the pending page can display rejection/deactivation reasons
+
+**Frontend**
+- `/register` — full employee self-registration form (fullName, email, employeeId, department, password + confirm); shows success card on submission
+- `/pending` — updated to display status-specific reason from session (e.g., "Your account registration was rejected. Reason: ...")
+- `/dashboard/owner` — Owner home page with navigation cards (HR Accounts, Settings placeholder)
+- `/dashboard/owner/hr-accounts` — HR account management: table with status badges, inline Create HR Account form, Deactivate/Reactivate buttons with optimistic loading state
+- `DashboardShell` — upgraded from placeholder to role-aware nav bar with active-link highlighting and Sign Out button
+
 ### Added — 2026-06-25 — Sprint 1 Pre-Implementation Documentation
 
 **Documentation**

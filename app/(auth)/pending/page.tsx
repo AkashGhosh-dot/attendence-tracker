@@ -14,28 +14,41 @@ type StatusInfo = {
   variant: "secondary" | "destructive" | "default" | "outline"
 }
 
-const STATUS_INFO: Record<string, StatusInfo> = {
-  PENDING: {
-    title: "Account Pending Approval",
-    description:
-      "Your registration is under review by HR. You will be able to log in once your account is approved.",
-    badge: "Pending",
-    variant: "secondary",
-  },
-  REJECTED: {
-    title: "Account Registration Rejected",
-    description:
-      "Your account registration was rejected. Please contact HR for more information or register with a different email address.",
-    badge: "Rejected",
-    variant: "destructive",
-  },
-  DEACTIVATED: {
-    title: "Account Deactivated",
-    description:
-      "Your account has been deactivated. Please contact HR or the system administrator.",
-    badge: "Deactivated",
-    variant: "destructive",
-  },
+function getStatusInfo(status: string, reason: string | null | undefined): StatusInfo {
+  switch (status) {
+    case "PENDING":
+      return {
+        title: "Account Pending Approval",
+        description: "Your registration is under review by HR. You will be able to log in once your account is approved.",
+        badge: "Pending",
+        variant: "secondary",
+      }
+    case "REJECTED":
+      return {
+        title: "Account Registration Rejected",
+        description: reason
+          ? `Your account registration was rejected. Reason: ${reason}`
+          : "Your account registration was rejected. Please contact HR for more information or register with a different email address.",
+        badge: "Rejected",
+        variant: "destructive",
+      }
+    case "DEACTIVATED":
+      return {
+        title: "Account Deactivated",
+        description: reason
+          ? `Your account has been deactivated. Reason: ${reason}`
+          : "Your account has been deactivated. Please contact HR or the system administrator.",
+        badge: "Deactivated",
+        variant: "destructive",
+      }
+    default:
+      return {
+        title: "Access Restricted",
+        description: "Your account does not currently have access to this system.",
+        badge: status,
+        variant: "secondary",
+      }
+  }
 }
 
 export default function PendingPage() {
@@ -60,12 +73,7 @@ export default function PendingPage() {
     return null
   }
 
-  const info = STATUS_INFO[session.user.status] ?? {
-    title: "Access Restricted",
-    description: "Your account does not currently have access to this system.",
-    badge: session.user.status,
-    variant: "secondary" as const,
-  }
+  const info = getStatusInfo(session.user.status, session.user.statusReason)
 
   return (
     <Card className="w-full max-w-sm shadow-md">

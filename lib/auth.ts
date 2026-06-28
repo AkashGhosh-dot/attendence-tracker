@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           status: user.status,
           fullName: user.fullName,
+          statusReason: user.statusReason,
         }
       },
     }),
@@ -50,6 +51,7 @@ export const authOptions: NextAuthOptions = {
         token.role = u.role
         token.status = u.status
         token.fullName = u.fullName
+        token.statusReason = u.statusReason
       }
       return token
     },
@@ -60,6 +62,7 @@ export const authOptions: NextAuthOptions = {
         role: token.role as "EMPLOYEE" | "HR" | "OWNER",
         status: token.status as "PENDING" | "APPROVED" | "REJECTED" | "DEACTIVATED",
         fullName: token.fullName as string,
+        statusReason: (token.statusReason as string | null) ?? null,
       }
       return session
     },

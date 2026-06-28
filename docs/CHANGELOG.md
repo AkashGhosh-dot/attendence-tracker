@@ -8,6 +8,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed — 2026-06-28 — Architecture: Remove Owner Role (Two-Role Simplification)
+
+**Breaking change**: OWNER role removed from the system. System now has two roles: HR and EMPLOYEE.
+
+**Removed**
+- `OWNER` value from `Role` enum in Prisma schema (migration: `20260628150000_remove_owner_role`)
+- `app/api/v1/owner/` — all owner API routes deleted
+- `app/dashboard/owner/` — owner dashboard pages deleted
+- Middleware route guard for `/dashboard/owner`
+- `SEED_OWNER_*` environment variables from `.env.example`
+
+**Changed**
+- `prisma/seed.ts` — now creates a single HR Administrator account (`hr@company.com` / `ChangeMe@123`, role=HR, status=APPROVED); no env variables required for seeding
+- `middleware.ts` — `ROLE_DASHBOARDS` updated to only include EMPLOYEE and HR
+- `types/index.ts`, `types/next-auth.d.ts`, `lib/auth.ts`, `lib/auth-helpers.ts` — `"OWNER"` removed from all Role union types
+- `components/layout/dashboard-shell.tsx` — OWNER nav entry removed
+- `app/(auth)/pending/page.tsx` — OWNER removed from role→dashboard redirect map
+- `.env.example` — removed `SEED_OWNER_*`, added `DIRECT_URL`
+
+**Migration note**: Run `prisma migrate deploy` to apply `20260628150000_remove_owner_role`. Any existing OWNER rows are automatically converted to HR before the enum value is dropped.
+
 ### Added — 2026-06-28 — Sprint 2: Authentication & Account Management
 
 **Backend**

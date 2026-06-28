@@ -60,10 +60,9 @@ export default function PendingPage() {
       router.push("/login")
     }
     if (status === "authenticated" && session?.user.status === "APPROVED") {
-      const dashMap = {
+      const dashMap: Record<string, string> = {
         EMPLOYEE: "/dashboard/employee",
         HR: "/dashboard/hr",
-        OWNER: "/dashboard/owner",
       }
       router.push(dashMap[session.user.role] ?? "/login")
     }

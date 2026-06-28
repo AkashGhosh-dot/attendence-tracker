@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
         const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
         if (!isValid) return null
 
-        // Allow any account status through — middleware redirects non-APPROVED to /pending
+        // Allow any status through — middleware redirects non-APPROVED to /pending
         return {
           id: user.id,
           email: user.email,
@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
       session.user = {
         id: token.id as string,
         email: token.email as string,
-        role: token.role as "EMPLOYEE" | "HR" | "OWNER",
+        role: token.role as "EMPLOYEE" | "HR",
         status: token.status as "PENDING" | "APPROVED" | "REJECTED" | "DEACTIVATED",
         fullName: token.fullName as string,
         statusReason: (token.statusReason as string | null) ?? null,

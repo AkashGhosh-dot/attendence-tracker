@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server"
 const ROLE_DASHBOARDS = {
   EMPLOYEE: "/dashboard/employee",
   HR: "/dashboard/hr",
-  OWNER: "/dashboard/owner",
 } as const
 
 export async function middleware(req: NextRequest) {
@@ -38,8 +37,8 @@ export async function middleware(req: NextRequest) {
   }
 
   // Approved user — enforce role-based routing
-  const role = token.role as "EMPLOYEE" | "HR" | "OWNER"
-  const dashboard = ROLE_DASHBOARDS[role]
+  const role = token.role as "EMPLOYEE" | "HR"
+  const dashboard = ROLE_DASHBOARDS[role] ?? "/login"
 
   // Redirect away from auth/root pages when already logged in
   if (
@@ -56,9 +55,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(dashboard, req.url))
   }
   if (pathname.startsWith("/dashboard/hr") && role !== "HR") {
-    return NextResponse.redirect(new URL(dashboard, req.url))
-  }
-  if (pathname.startsWith("/dashboard/owner") && role !== "OWNER") {
     return NextResponse.redirect(new URL(dashboard, req.url))
   }
 

@@ -7,7 +7,7 @@ declare module "next-auth" {
       id: string
       email: string
       fullName: string
-      role: "EMPLOYEE" | "HR" | "OWNER"
+      role: "EMPLOYEE" | "HR"
       status: "PENDING" | "APPROVED" | "REJECTED" | "DEACTIVATED"
       statusReason: string | null
     }
@@ -15,7 +15,7 @@ declare module "next-auth" {
 
   interface User {
     id: string
-    role: "EMPLOYEE" | "HR" | "OWNER"
+    role: "EMPLOYEE" | "HR"
     status: "PENDING" | "APPROVED" | "REJECTED" | "DEACTIVATED"
     fullName: string
     statusReason: string | null
@@ -25,7 +25,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id: string
-    role: "EMPLOYEE" | "HR" | "OWNER"
+    role: "EMPLOYEE" | "HR"
     status: "PENDING" | "APPROVED" | "REJECTED" | "DEACTIVATED"
     fullName: string
     statusReason: string | null

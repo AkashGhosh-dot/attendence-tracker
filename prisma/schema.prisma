@@ -13,7 +13,6 @@ datasource db {
 enum Role {
   EMPLOYEE
   HR
-  OWNER
 }
 
 enum AccountStatus {

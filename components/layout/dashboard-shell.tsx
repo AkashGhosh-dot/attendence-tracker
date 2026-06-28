@@ -8,10 +8,6 @@ import { Button } from "@/components/ui/button"
 type NavItem = { label: string; href: string }
 
 const NAV: Record<string, NavItem[]> = {
-  OWNER: [
-    { label: "Dashboard", href: "/dashboard/owner" },
-    { label: "HR Accounts", href: "/dashboard/owner/hr-accounts" },
-  ],
   HR: [
     { label: "Dashboard", href: "/dashboard/hr" },
   ],
@@ -25,7 +21,7 @@ export function DashboardShell({
   role,
 }: {
   children: React.ReactNode
-  role?: "EMPLOYEE" | "HR" | "OWNER"
+  role?: "EMPLOYEE" | "HR"
 }) {
   const pathname = usePathname()
   const navItems = role ? (NAV[role] ?? []) : []

@@ -1,4 +1,4 @@
-export type Role = "EMPLOYEE" | "HR" | "OWNER"
+export type Role = "EMPLOYEE" | "HR"
 export type AccountStatus = "PENDING" | "APPROVED" | "REJECTED" | "DEACTIVATED"
 export type AttendanceStatus = "PRESENT" | "ABSENT" | "INCOMPLETE"
 export type AttendanceStep = "WORKING" | "ON_BREAK" | "RESUMED" | "COMPLETED" | "INCOMPLETE"

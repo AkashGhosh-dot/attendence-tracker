@@ -4,32 +4,25 @@ import bcrypt from "bcryptjs"
 const prisma = new PrismaClient()
 
 async function main() {
-  const email = process.env.SEED_OWNER_EMAIL
-  const password = process.env.SEED_OWNER_PASSWORD
-  const fullName = process.env.SEED_OWNER_FULL_NAME
-
-  if (!email || !password || !fullName) {
-    throw new Error(
-      "Missing required environment variables: SEED_OWNER_EMAIL, SEED_OWNER_PASSWORD, SEED_OWNER_FULL_NAME"
-    )
-  }
+  const email = "hr@company.com"
+  const password = "ChangeMe@123"
+  const fullName = "HR Administrator"
 
   const passwordHash = await bcrypt.hash(password, 12)
 
-  const owner = await prisma.user.upsert({
+  const hr = await prisma.user.upsert({
     where: { email },
     update: {},
     create: {
       email,
       passwordHash,
       fullName,
-      role: "OWNER",
+      role: "HR",
       status: "APPROVED",
     },
   })
 
-  console.log(`✅ Owner: ${owner.email} (id: ${owner.id})`)
-  console.log(`   password_hash starts with: ${owner.passwordHash.substring(0, 7)}`)
+  console.log(`✅ HR account: ${hr.email} (id: ${hr.id})`)
 
   const settings = [
     {
@@ -63,8 +56,8 @@ async function main() {
     console.log(`✅ Setting: ${setting.key} = ${setting.value}`)
   }
 
-  console.log("\n✅ Seed completed successfully.")
-  console.log(`   users: 1 row (Owner)`)
+  console.log("\n✅ Seed completed.")
+  console.log(`   users: 1 row (HR Administrator)`)
   console.log(`   system_settings: ${settings.length} rows`)
 }
 

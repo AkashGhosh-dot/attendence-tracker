@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  EMPLOYEE
+  HR
+  OWNER
+}
+
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DEACTIVATED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  INCOMPLETE
+}
+
+enum AttendanceStep {
+  WORKING
+  ON_BREAK
+  RESUMED
+  COMPLETED
+  INCOMPLETE
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId      String?       @unique @map("employee_id") @db.VarChar(50)
+  fullName        String        @map("full_name") @db.VarChar(255)
+  email           String        @unique @db.VarChar(255)
+  passwordHash    String        @map("password_hash") @db.VarChar(255)
+  department      String?       @db.VarChar(100)
+  role            Role          @default(EMPLOYEE)
+  status          AccountStatus @default(PENDING)
+  statusReason    String?       @map("status_reason") @db.VarChar(500)
+  statusChangedBy String?       @map("status_changed_by") @db.Uuid
+  statusChangedAt DateTime?     @map("status_changed_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  statusChanger      User?              @relation("UserStatusHistory", fields: [statusChangedBy], references: [id], onDelete: SetNull)
+  statusChangedUsers User[]             @relation("UserStatusHistory")
+  attendance         AttendanceRecord[]
+  createdHolidays    Holiday[]          @relation("HolidayCreatedBy")
+  deletedHolidays    Holiday[]          @relation("HolidayDeletedBy")
+  updatedSettings    SystemSetting[]
+
+  @@index([status])
+  @@index([role])
+  @@map("users")
+}
+
+model AttendanceRecord {
+  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId               String           @map("user_id") @db.Uuid
+  date                 DateTime         @db.Date
+  startWorkAt          DateTime?        @map("start_work_at")
+  startBreakAt         DateTime?        @map("start_break_at")
+  endBreakAt           DateTime?        @map("end_break_at")
+  endWorkAt            DateTime?        @map("end_work_at")
+  breakDurationMinutes Int?             @map("break_duration_minutes")
+  totalWorkMinutes     Int?             @map("total_work_minutes")
+  isLate               Boolean          @default(false) @map("is_late")
+  status               AttendanceStatus @default(PRESENT)
+  currentStep          AttendanceStep?  @map("current_step")
+  breakExceeded        Boolean          @default(false) @map("break_exceeded")
+  breakNotCompleted    Boolean          @default(false) @map("break_not_completed")
+  createdAt            DateTime         @default(now()) @map("created_at")
+  updatedAt            DateTime         @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, date])
+  @@index([date, userId])
+  @@index([date, status])
+  @@map("attendance_records")
+}
+
+model Holiday {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date      DateTime  @db.Date
+  name      String    @db.VarChar(255)
+  createdBy String    @map("created_by") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by") @db.Uuid
+
+  creator User  @relation("HolidayCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
+  deleter User? @relation("HolidayDeletedBy", fields: [deletedBy], references: [id], onDelete: SetNull)
+
+  // NOTE: Partial unique index applied via raw migration SQL (Prisma does not support partial indexes natively):
+  // CREATE UNIQUE INDEX "holidays_date_active_unique" ON "holidays" ("date") WHERE "deleted_at" IS NULL;
+  @@index([date])
+  @@index([deletedAt])
+  @@map("holidays")
+}
+
+model SystemSetting {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key         String   @unique @db.VarChar(100)
+  value       String   @db.Text
+  description String?  @db.VarChar(500)
+  updatedBy   String?  @map("updated_by") @db.Uuid
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  updater User? @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
+
+  @@map("system_settings")
+}

@@ -9,7 +9,11 @@ type NavItem = { label: string; href: string }
 
 const NAV: Record<string, NavItem[]> = {
   HR: [
-    { label: "Dashboard", href: "/dashboard/hr" },
+    { label: "Overview", href: "/dashboard/hr" },
+    { label: "Employees", href: "/dashboard/hr/employees" },
+    { label: "Attendance", href: "/dashboard/hr/attendance" },
+    { label: "Holidays", href: "/dashboard/hr/holidays" },
+    { label: "Settings", href: "/dashboard/hr/settings" },
   ],
   EMPLOYEE: [
     { label: "Dashboard", href: "/dashboard/employee" },

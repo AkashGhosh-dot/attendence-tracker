@@ -17,6 +17,7 @@ const NAV: Record<string, NavItem[]> = {
   ],
   EMPLOYEE: [
     { label: "Dashboard", href: "/dashboard/employee" },
+    { label: "History", href: "/dashboard/employee/history" },
   ],
 }
 
